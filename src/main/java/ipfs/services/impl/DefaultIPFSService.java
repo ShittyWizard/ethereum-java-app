@@ -1,4 +1,4 @@
-package ipfs.impl;
+package ipfs.services.impl;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import io.ipfs.api.IPFS;
 import io.ipfs.api.MerkleNode;
 import io.ipfs.api.NamedStreamable;
 import io.ipfs.multihash.Multihash;
-import ipfs.IPFSService;
+import ipfs.services.IPFSService;
 
 @Service
 public class DefaultIPFSService implements IPFSService, InitializingBean {

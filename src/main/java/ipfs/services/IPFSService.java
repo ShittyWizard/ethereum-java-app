@@ -1,4 +1,4 @@
-package ipfs;
+package ipfs.services;
 
 public interface IPFSService {
     public boolean uploadFile(String pathToFile);
