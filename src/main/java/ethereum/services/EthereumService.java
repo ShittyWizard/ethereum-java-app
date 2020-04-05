@@ -13,5 +13,10 @@ public interface EthereumService {
             throws IOException;
     public TransactionReceipt sendFunds(BigDecimal value, Convert.Unit unit, String publicKeyOfRecipient, Credentials credentials)
             throws Exception;
-
+    public boolean storeHashOfFile(String hashOfFile, String contractAddress, String privateKey)
+            throws Exception;
+    public void getHashes(String contractAddress, String privateKey)
+            throws Exception;
+    public String deployKycContract(String privateKey)
+            throws Exception;
 }
