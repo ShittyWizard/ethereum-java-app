@@ -1,11 +1,14 @@
 package ipfs.services.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,21 +33,21 @@ public class DefaultIPFSService implements IPFSService, InitializingBean {
     }
 
     @Override
-    public boolean uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file) {
         try {
             NamedStreamable.InputStreamWrapper is = new NamedStreamable.InputStreamWrapper(file.getInputStream());
             MerkleNode response = ipfs.add(is).get(0);
-            String hash = response.name.orElse("empty");
-            LOG.debug("Successful uploading. Hash - {}", hash);
-            return true;
+            String hash = response.name.orElse("");
+            LOG.info("Successful uploading. Hash - {}", hash);
+            return hash;
         } catch (IOException e) {
             LOG.error("Uploading failed. {}", e.getMessage());
-            return false;
+            return "";
         }
     }
 
     @Override
-    public byte[] downloadFile(String hash) {
+    public InputStreamResource downloadFile(String hash) {
         Multihash multihash = Multihash.fromBase58(hash);
         byte[] content = new byte[0];
         try {
@@ -53,6 +56,7 @@ public class DefaultIPFSService implements IPFSService, InitializingBean {
         } catch (IOException e) {
             LOG.info("Downloading of file failed. {}", e.getMessage());
         }
-        return content;
+        InputStream inputStream = new ByteArrayInputStream(content);
+        return new InputStreamResource(inputStream);
     }
 }
