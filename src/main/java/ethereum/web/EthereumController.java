@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +30,10 @@ public class EthereumController {
     @Autowired
     private InitFileStoreEventResourceAssembler initFileStoreEventResourceAssembler;
 
+    @Value("${eth.crossnode.private.key}")
+    private String CROSS_NODE_PRIVATE_KEY;
+    private static String FILE_STORAGE_CONTRACT_ADDRESS;
+
     @PostMapping("/init")
     public String storeFile(
             @RequestBody
@@ -38,8 +44,24 @@ public class EthereumController {
                     String privateKey
     )
             throws Exception {
-        String hashOfFile = ipfsService.uploadFile(file);
+        String hashOfFile = ipfsService.uploadMultipartFile(file);
         return ethereumService.storeHashOfFile(hashOfFile, contractAddress, privateKey);
+    }
+
+//    todo: add publicAddress and init contract for providing rights to node with this address
+    @PostMapping("/crosschain/init")
+    public String storeFileCrosschain(
+            @RequestBody
+                    InputStreamResource inputStreamResource
+            )
+            throws Exception {
+        System.out.println("Got request for crosschain transaction...");
+        String hashOfFile = ipfsService.uploadFileByInputStream(inputStreamResource.getInputStream());
+        if (FILE_STORAGE_CONTRACT_ADDRESS != null) {
+            return ethereumService.storeHashOfFile(hashOfFile, FILE_STORAGE_CONTRACT_ADDRESS, CROSS_NODE_PRIVATE_KEY);
+        } else {
+            throw new IllegalArgumentException("Can't get contract address...");
+        }
     }
 
     @GetMapping("/hashes")
@@ -71,6 +93,9 @@ public class EthereumController {
                     String privateKey
     )
             throws Exception {
-        return ethereumService.deployFileStorageContract(privateKey);
+        String contractAddress = ethereumService.deployFileStorageContract(privateKey);
+        FILE_STORAGE_CONTRACT_ADDRESS = contractAddress;
+        System.out.println("Contract address is " + contractAddress);
+        return contractAddress;
     }
 }

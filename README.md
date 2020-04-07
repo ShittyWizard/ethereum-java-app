@@ -19,3 +19,27 @@ all banks are divided into separate groups with their own technology or platform
 So, I will try to solve this problem for the two platforms that are actively used in the banking sector - **R3 Corda** and **Ethereum**.
 
 _**todo:** add links to KYC, R3 Corda, Ethereum, Hyperledger Fabric and part with Corda application_
+
+
+## How to run ethereum part
+
+Run [ganache-cli](https://github.com/trufflesuite/ganache-cli) by command:
+```
+ganache-cli -a *number of generated accounts* - m *your mnemonic phrase*
+```
+
+Then, run [IPFS](https://docs-beta.ipfs.io/how-to/command-line-quick-start/#install-ipfs) node by:
+```
+ipfs init
+```
+
+You will get next command, something like _ipfs cat /ipfs/.../readme_. Run it. Then :
+```
+ipfs daemon
+```
+
+After these instructions run **Application.class** by IDEA.
+
+
+
+_**todo:** add "how to run whole scenario (ethereum + corda)"_

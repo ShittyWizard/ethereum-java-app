@@ -33,9 +33,23 @@ public class DefaultIPFSService implements IPFSService, InitializingBean {
     }
 
     @Override
-    public String uploadFile(MultipartFile file) {
+    public String uploadMultipartFile(MultipartFile file) {
         try {
             NamedStreamable.InputStreamWrapper is = new NamedStreamable.InputStreamWrapper(file.getInputStream());
+            MerkleNode response = ipfs.add(is).get(0);
+            String hash = response.name.orElse("");
+            LOG.info("Successful uploading. Hash - {}", hash);
+            return hash;
+        } catch (IOException e) {
+            LOG.error("Uploading failed. {}", e.getMessage());
+            return "";
+        }
+    }
+
+    @Override
+    public String uploadFileByInputStream(InputStream inputStream) {
+        try {
+            NamedStreamable.InputStreamWrapper is = new NamedStreamable.InputStreamWrapper(inputStream);
             MerkleNode response = ipfs.add(is).get(0);
             String hash = response.name.orElse("");
             LOG.info("Successful uploading. Hash - {}", hash);
