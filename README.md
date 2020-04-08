@@ -38,7 +38,7 @@ You will get next command, something like _ipfs cat /ipfs/.../readme_. Run it. T
 ipfs daemon
 ```
 
-After these instructions run **Application.class** by IDEA.
+After these instructions run **Application.class** by IDEA and use Postman (or whatever) for sending HTTP requests to application.
 
 
 

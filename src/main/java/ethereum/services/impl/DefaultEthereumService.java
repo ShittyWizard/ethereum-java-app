@@ -61,11 +61,18 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
         String txHash = txStore.getTransactionHash();
         System.out.println("Transaction hash " + txHash);
 
-        List<FileStorageContract.InitFileStoreEventResponse> initEvents = fileStorageContract.getInitFileStoreEvents(txStore);
-        if (!initEvents.isEmpty()) {
-            System.out.println("InitEvents size " + initEvents.size());
-            initEvents.forEach(e -> System.out.println("Owner: " + e.owner + " Hash: " + e.hashOfFile));
-        }
+        return txHash;
+    }
+
+    @Override
+    public String changeFileOwner(String hashOfFile, String sendToAddress, String contractAddress, String privateKey)
+            throws Exception {
+        Credentials credentials = Credentials.create(privateKey);
+        FileStorageContract fileStorageContract = FileStorageContract.load(contractAddress, web3, credentials, new DefaultGasProvider());
+        TransactionReceipt txChange = fileStorageContract.changeFileOwner(hashOfFile, sendToAddress).send();
+        String txHash = txChange.getTransactionHash();
+        System.out.println("Transaction hash " + txHash);
+
         return txHash;
     }
 
@@ -86,6 +93,20 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
         ethFilter.addSingleTopic(EventEncoder.encode(FileStorageContract.INITFILESTORE_EVENT));
         List<FileStorageContract.InitFileStoreEventResponse> responses = new ArrayList<>();
         fileStorageContract.initFileStoreEventFlowable(ethFilter)
+                           .subscribe(responses::add);
+
+        return responses;
+    }
+
+    @Override
+    public List<FileStorageContract.ChangeFileOwnerEventResponse> getChangeFileOwnerEvents(String contractAddress, String privateKey) {
+        Credentials credentials = Credentials.create(privateKey);
+        FileStorageContract fileStorageContract = FileStorageContract.load(contractAddress, web3, credentials, new DefaultGasProvider());
+        final EthFilter ethFilter = new EthFilter(EARLIEST, LATEST, fileStorageContract.getContractAddress());
+
+        ethFilter.addSingleTopic(EventEncoder.encode(FileStorageContract.CHANGEFILEOWNER_EVENT));
+        List<FileStorageContract.ChangeFileOwnerEventResponse> responses = new ArrayList<>();
+        fileStorageContract.changeFileOwnerEventFlowable(ethFilter)
                            .subscribe(responses::add);
 
         return responses;

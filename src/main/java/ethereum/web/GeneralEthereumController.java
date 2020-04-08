@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,23 +14,25 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import ethereum.services.EthereumService;
+import ethereum.web.assemblers.ChangeFileOwnerEventResourceAssembler;
 import ethereum.web.assemblers.InitFileStoreEventResourceAssembler;
+import ethereum.web.dto.ChangeFileOwnerEventResource;
 import ethereum.web.dto.InitFileStoreEventResource;
 import ipfs.services.IPFSService;
 
 @RestController
 @RequestMapping(value = "/ethereum/filestore", produces = MediaType.APPLICATION_JSON_VALUE)
-public class EthereumController {
+public class GeneralEthereumController {
     @Autowired
     private EthereumService ethereumService;
     @Autowired
     private IPFSService ipfsService;
     @Autowired
     private InitFileStoreEventResourceAssembler initFileStoreEventResourceAssembler;
+    @Autowired
+    private ChangeFileOwnerEventResourceAssembler changeFileOwnerEventResourceAssembler;
 
-    @Value("${eth.crossnode.private.key}")
-    private String CROSS_NODE_PRIVATE_KEY;
-    private static String FILE_STORAGE_CONTRACT_ADDRESS;
+    protected static String FILE_STORAGE_CONTRACT_ADDRESS;
 
     @PostMapping("/init")
     public String storeFile(
@@ -48,20 +48,19 @@ public class EthereumController {
         return ethereumService.storeHashOfFile(hashOfFile, contractAddress, privateKey);
     }
 
-//    todo: add publicAddress and init contract for providing rights to node with this address
-    @PostMapping("/crosschain/init")
-    public String storeFileCrosschain(
-            @RequestBody
-                    InputStreamResource inputStreamResource
-            )
+    @PostMapping("/changeOwner")
+    public String changeFileOwner(
+            @RequestParam
+                    String hashOfFile,
+            @RequestParam
+                    String sendToAddress,
+            @RequestParam
+                    String contractAddress,
+            @RequestParam
+                    String privateKey
+    )
             throws Exception {
-        System.out.println("Got request for crosschain transaction...");
-        String hashOfFile = ipfsService.uploadFileByInputStream(inputStreamResource.getInputStream());
-        if (FILE_STORAGE_CONTRACT_ADDRESS != null) {
-            return ethereumService.storeHashOfFile(hashOfFile, FILE_STORAGE_CONTRACT_ADDRESS, CROSS_NODE_PRIVATE_KEY);
-        } else {
-            throw new IllegalArgumentException("Can't get contract address...");
-        }
+        return ethereumService.changeFileOwner(hashOfFile, sendToAddress, contractAddress, privateKey);
     }
 
     @GetMapping("/hashes")
@@ -75,7 +74,7 @@ public class EthereumController {
         return ethereumService.getHashes(contractAddress, privateKey);
     }
 
-    @GetMapping("/initEvents")
+    @GetMapping("/events/initFile")
     public List<InitFileStoreEventResource> getInitFileEvents(
             @RequestParam
                     String contractAddress,
@@ -84,6 +83,18 @@ public class EthereumController {
     ) {
         return ethereumService.getInitFileStoreEvents(contractAddress, privateKey).stream()
                               .map(initFileStoreEventResourceAssembler::toResource)
+                              .collect(Collectors.toList());
+    }
+
+    @GetMapping("/events/changeOwner")
+    public List<ChangeFileOwnerEventResource> getChangeFileOwnerEvents(
+            @RequestParam
+                    String contractAddress,
+            @RequestParam
+                    String privateKey
+    ) {
+        return ethereumService.getChangeFileOwnerEvents(contractAddress, privateKey).stream()
+                              .map(changeFileOwnerEventResourceAssembler::toResource)
                               .collect(Collectors.toList());
     }
 
