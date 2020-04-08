@@ -1,13 +1,16 @@
 package ipfs.services.impl;
 
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.ipfs.api.IPFS;
 import io.ipfs.api.MerkleNode;
@@ -22,11 +25,6 @@ public class DefaultIPFSService implements IPFSService, InitializingBean {
     @Value("${ipfs.node.multiaddr}")
     private String multiaddr;
 
-    @Value("${ipfs.test.upload.file.path")
-    private String pathToUploadFile;
-    @Value("${ipfs.test.download.file.path}")
-    private String pathToDownloadFile;
-
     private IPFS ipfs;
 
     @Override
@@ -35,29 +33,44 @@ public class DefaultIPFSService implements IPFSService, InitializingBean {
     }
 
     @Override
-    public boolean uploadFile(String pathToFile) {
+    public String uploadMultipartFile(MultipartFile file) {
         try {
-            NamedStreamable.InputStreamWrapper is = new NamedStreamable.InputStreamWrapper(new FileInputStream(pathToFile));
+            NamedStreamable.InputStreamWrapper is = new NamedStreamable.InputStreamWrapper(file.getInputStream());
             MerkleNode response = ipfs.add(is).get(0);
-            String hash = response.name.orElse("empty");
-            LOG.debug("Successful uploading. Hash - {}", hash);
-            return true;
+            String hash = response.name.orElse("");
+            LOG.info("Successful uploading. Hash - {}", hash);
+            return hash;
         } catch (IOException e) {
             LOG.error("Uploading failed. {}", e.getMessage());
-            return false;
+            return "";
         }
     }
 
     @Override
-    public byte[] downloadFile(String hash) {
+    public String uploadFileByInputStream(InputStream inputStream) {
+        try {
+            NamedStreamable.InputStreamWrapper is = new NamedStreamable.InputStreamWrapper(inputStream);
+            MerkleNode response = ipfs.add(is).get(0);
+            String hash = response.name.orElse("");
+            LOG.info("Successful uploading. Hash - {}", hash);
+            return hash;
+        } catch (IOException e) {
+            LOG.error("Uploading failed. {}", e.getMessage());
+            return "";
+        }
+    }
+
+    @Override
+    public InputStreamResource downloadFile(String hash) {
         Multihash multihash = Multihash.fromBase58(hash);
         byte[] content = new byte[0];
         try {
             content = ipfs.cat(multihash);
-            LOG.debug("Successful downloading of file - {}", hash);
+            LOG.info("Successful downloading of file - {}", hash);
         } catch (IOException e) {
-            LOG.error("Downloading of file failed. {}", e.getMessage());
+            LOG.info("Downloading of file failed. {}", e.getMessage());
         }
-        return content;
+        InputStream inputStream = new ByteArrayInputStream(content);
+        return new InputStreamResource(inputStream);
     }
 }
