@@ -39,11 +39,13 @@ public class GeneralEthereumController {
             @RequestBody
                     MultipartFile file,
             @RequestParam
+                    String contractAddress,
+            @RequestParam
                     String privateKey
     )
             throws Exception {
         String hashOfFile = ipfsService.uploadMultipartFile(file);
-        return ethereumService.storeHashOfFile(hashOfFile, FILE_STORAGE_CONTRACT_ADDRESS, privateKey);
+        return ethereumService.storeHashOfFile(hashOfFile, contractAddress, privateKey);
     }
 
     @PostMapping("/changeOwner")
@@ -53,27 +55,33 @@ public class GeneralEthereumController {
             @RequestParam
                     String sendToAddress,
             @RequestParam
+                    String contractAddress,
+            @RequestParam
                     String privateKey
     )
             throws Exception {
-        return ethereumService.changeFileOwner(hashOfFile, sendToAddress, FILE_STORAGE_CONTRACT_ADDRESS, privateKey);
+        return ethereumService.changeFileOwner(hashOfFile, sendToAddress, contractAddress, privateKey);
     }
 
     @GetMapping("/hashes")
     public List<String> getHashes(
             @RequestParam
+                    String contractAddress,
+            @RequestParam
                     String privateKey
     )
             throws Exception {
-        return ethereumService.getHashes(FILE_STORAGE_CONTRACT_ADDRESS, privateKey);
+        return ethereumService.getHashes(contractAddress, privateKey);
     }
 
     @GetMapping("/events/initFile")
     public List<InitFileStoreEventResource> getInitFileEvents(
             @RequestParam
+                    String contractAddress,
+            @RequestParam
                     String privateKey
     ) {
-        return ethereumService.getInitFileStoreEvents(FILE_STORAGE_CONTRACT_ADDRESS, privateKey).stream()
+        return ethereumService.getInitFileStoreEvents(contractAddress, privateKey).stream()
                               .map(initFileStoreEventResourceAssembler::toResource)
                               .collect(Collectors.toList());
     }
@@ -81,9 +89,11 @@ public class GeneralEthereumController {
     @GetMapping("/events/changeOwner")
     public List<ChangeFileOwnerEventResource> getChangeFileOwnerEvents(
             @RequestParam
+                    String contractAddress,
+            @RequestParam
                     String privateKey
     ) {
-        return ethereumService.getChangeFileOwnerEvents(FILE_STORAGE_CONTRACT_ADDRESS, privateKey).stream()
+        return ethereumService.getChangeFileOwnerEvents(contractAddress, privateKey).stream()
                               .map(changeFileOwnerEventResourceAssembler::toResource)
                               .collect(Collectors.toList());
     }

@@ -55,7 +55,6 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
     @Override
     public String storeHashOfFile(String hashOfFile, String contractAddress, String privateKey)
             throws Exception {
-        assertContractAddressIsNotNull(contractAddress);
         Credentials credentials = Credentials.create(privateKey);
         FileStorageContract fileStorageContract = FileStorageContract.load(contractAddress, web3, credentials, new DefaultGasProvider());
         TransactionReceipt txStore = fileStorageContract.initFileStore(hashOfFile).send();
@@ -68,7 +67,6 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
     @Override
     public String changeFileOwner(String hashOfFile, String sendToAddress, String contractAddress, String privateKey)
             throws Exception {
-        assertContractAddressIsNotNull(contractAddress);
         Credentials credentials = Credentials.create(privateKey);
         FileStorageContract fileStorageContract = FileStorageContract.load(contractAddress, web3, credentials, new DefaultGasProvider());
         TransactionReceipt txChange = fileStorageContract.changeFileOwner(hashOfFile, sendToAddress).send();
@@ -81,7 +79,6 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
     @Override
     public List<String> getHashes(String contractAddress, String privateKey)
             throws Exception {
-        assertContractAddressIsNotNull(contractAddress);
         Credentials credentials = Credentials.create(privateKey);
         FileStorageContract fileStorageContract = FileStorageContract.load(contractAddress, web3, credentials, new DefaultGasProvider());
         return (List<String>) fileStorageContract.getFileStore().send();
@@ -89,7 +86,6 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
 
     @Override
     public List<FileStorageContract.InitFileStoreEventResponse> getInitFileStoreEvents(String contractAddress, String privateKey) {
-        assertContractAddressIsNotNull(contractAddress);
         Credentials credentials = Credentials.create(privateKey);
         FileStorageContract fileStorageContract = FileStorageContract.load(contractAddress, web3, credentials, new DefaultGasProvider());
         final EthFilter ethFilter = new EthFilter(EARLIEST, LATEST, fileStorageContract.getContractAddress());
@@ -104,7 +100,6 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
 
     @Override
     public List<FileStorageContract.ChangeFileOwnerEventResponse> getChangeFileOwnerEvents(String contractAddress, String privateKey) {
-        assertContractAddressIsNotNull(contractAddress);
         Credentials credentials = Credentials.create(privateKey);
         FileStorageContract fileStorageContract = FileStorageContract.load(contractAddress, web3, credentials, new DefaultGasProvider());
         final EthFilter ethFilter = new EthFilter(EARLIEST, LATEST, fileStorageContract.getContractAddress());
@@ -143,11 +138,5 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
     )
             throws Exception {
         return Transfer.sendFunds(web3, credentials, publicKeyOfRecipient, value, unit).send();
-    }
-
-    private void assertContractAddressIsNotNull(String contractAddress) {
-        if (contractAddress == null) {
-            throw new IllegalArgumentException("Contract address is null.");
-        }
     }
 }
