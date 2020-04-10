@@ -33,7 +33,7 @@ public class CrosschainRequesterEthereumController {
     @Autowired
     private RestTemplate restTemplate;
 
-    private static String CORDA_START_KYC_FLOW_URL = "http://localhost:10052/attachments/startKYCFlow/crosschain/receiver";
+    private static String CORDA_START_KYC_FLOW_URL = "http://localhost:10056/attachments/startKYCFlow/crosschain/receiver";
 
     @Value("${eth.crossnode.public.key}")
     private String CROSS_NODE_PUBLIC_KEY;
@@ -45,7 +45,11 @@ public class CrosschainRequesterEthereumController {
             @RequestBody
                     MultipartFile file,
             @RequestParam
-                    String sendToAddress,
+                    String organisation,
+            @RequestParam
+                    String locality,
+            @RequestParam
+                    String country,
             @RequestParam
                     String publicKey,
             @RequestParam
@@ -61,7 +65,9 @@ public class CrosschainRequesterEthereumController {
         HttpEntity<InputStreamResource> entity = new HttpEntity<>(new InputStreamResource(file.getInputStream()), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(CORDA_START_KYC_FLOW_URL)
-                                                           .queryParam("sendToAddress", sendToAddress)
+                                                           .queryParam("organisation", organisation)
+                                                           .queryParam("locality", locality)
+                                                           .queryParam("country", country)
                                                            .queryParam("filename", "filename")
                                                            .queryParam("uploader", "ethereum:" + publicKey);
 
