@@ -41,5 +41,8 @@ ipfs daemon
 After these instructions run **Application.class** by IDEA and use Postman (or whatever) for sending HTTP requests to application.
 
 
+## How to run crosschain transaction (Ethereum --> Corda)
+For running crosschain transaction from Ethereum network to Corda use this controller's method - *ethereum.web.CrosschainRequesterEthereumController.changeInitFileOwner*;
 
-_**todo:** add "how to run whole scenario (ethereum + corda)"_
+
+**todo:** add example of request
