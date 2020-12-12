@@ -27,13 +27,11 @@ import ethereum.services.EthereumService;
 import static org.web3j.protocol.core.DefaultBlockParameterName.EARLIEST;
 import static org.web3j.protocol.core.DefaultBlockParameterName.LATEST;
 
-// todo: split into 2 services (EthFileStorageService and EthGeneralService)
 @Service
 public class DefaultEthereumService implements EthereumService, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultEthereumService.class);
 
-//    @Value("${eth.ganache.local.url}")
-    private String ganacheLocalHttpUrl = "http://localhost:8545";
+    private String ganacheLocalHttpUrl = "http://178.154.248.132:8545";
 
     private Web3j web3;
 
@@ -41,7 +39,7 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
     public void afterPropertiesSet() {
         LOG.info("Connecting to Web3 ganache test network...");
         web3 = Web3j.build(new HttpService(ganacheLocalHttpUrl));
-        LOG.info("Successfully connected to Ethereum! Address {}", "http://localhost:8545");
+        LOG.info("Successfully connected to Ethereum! Address {}", ganacheLocalHttpUrl);
     }
 
     @Override

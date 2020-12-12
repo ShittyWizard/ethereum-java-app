@@ -19,10 +19,6 @@ import ipfs.config.IPFSConfig;
         IPFSConfig.class,
         CorsConfiguration.class
 })
-@PropertySource(
-        "classpath:ethereum.properties"
-//        "classpath:ipfs.properties"
-)
 @SpringBootApplication
 public class Application {
     private static final Logger LOG = LoggerFactory.getLogger(Application.class);
