@@ -23,8 +23,8 @@ public class CrosschainReceiverEthereumController {
     @Autowired
     private IPFSService ipfsService;
 
-    @Value("${eth.crossnode.private.key}")
-    private String CROSS_NODE_PRIVATE_KEY;
+    //@Value("${eth.crossnode.private.key}")
+    private String CROSS_NODE_PRIVATE_KEY = "0x5c690e5e749aaca8cdd21dfffd1cda77d1dca1326f0d9c756f5943947f8f5516";
 
     //    UNUSED
     @PostMapping("/init")

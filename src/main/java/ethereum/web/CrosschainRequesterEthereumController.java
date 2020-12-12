@@ -35,10 +35,10 @@ public class CrosschainRequesterEthereumController {
 
     private static String CORDA_START_KYC_FLOW_URL = "http://localhost:10056/attachments/startKYCFlow/crosschain/receiver";
 
-    @Value("${eth.crossnode.public.key}")
-    private String CROSS_NODE_PUBLIC_KEY;
-    @Value("${eth.crossnode.private.key}")
-    private String CROSS_NODE_PRIVATE_KEY;
+    //@Value("${eth.crossnode.public.key}")
+    private String CROSS_NODE_PUBLIC_KEY = "0x751fE2C79d17579479cAAe7c506b6Fe2c8F05026";
+    //@Value("${eth.crossnode.private.key}")
+    private String CROSS_NODE_PRIVATE_KEY = "0x5c690e5e749aaca8cdd21dfffd1cda77d1dca1326f0d9c756f5943947f8f5516";
 
     @PostMapping("/changeOwner")
     public String changeInitFileOwner(
