@@ -33,7 +33,8 @@ public class CrosschainRequesterEthereumController {
     @Autowired
     private RestTemplate restTemplate;
 
-    private static String CORDA_START_KYC_FLOW_URL = "http://localhost:10056/attachments/startKYCFlow/crosschain/receiver";
+    //    todo: change address to new IP
+    private static String CORDA_START_KYC_FLOW_URL = "http://84.201.169.143:10056/attachments/startKYCFlow/crosschain/receiver";
 
     @Value("${eth.crossnode.public.key}")
     private String CROSS_NODE_PUBLIC_KEY;
@@ -41,6 +42,39 @@ public class CrosschainRequesterEthereumController {
     private String CROSS_NODE_PRIVATE_KEY;
 
     @PostMapping("/changeOwner")
+    public String changeExistingFileOwner(
+            @RequestParam
+                    String ipfsHashFile,
+            @RequestParam
+                    String organisation,
+            @RequestParam
+                    String locality,
+            @RequestParam
+                    String country,
+            @RequestParam
+                    String publicKey,
+            @RequestParam
+                    String privateKey
+    ) throws Exception {
+        String txHash = ethereumService.changeFileOwner(ipfsHashFile, CROSS_NODE_PUBLIC_KEY, FILE_STORAGE_CONTRACT_ADDRESS, privateKey);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        InputStreamResource fileStreamResource = ipfsService.downloadFile(ipfsHashFile);
+        HttpEntity<InputStreamResource> entity = new HttpEntity<>(fileStreamResource, headers);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(CORDA_START_KYC_FLOW_URL)
+                .queryParam("organisation", organisation)
+                .queryParam("locality", locality)
+                .queryParam("country", country)
+                .queryParam("filename", "filename")
+                .queryParam("uploader", "ethereum:" + publicKey);
+
+        restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity, Void.class).getBody();
+        return txHash;
+    }
+
+    @PostMapping("/changeOwnerExpress")
     public String changeInitFileOwner(
             @RequestBody
                     MultipartFile file,
@@ -65,11 +99,11 @@ public class CrosschainRequesterEthereumController {
         HttpEntity<InputStreamResource> entity = new HttpEntity<>(new InputStreamResource(file.getInputStream()), headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(CORDA_START_KYC_FLOW_URL)
-                                                           .queryParam("organisation", organisation)
-                                                           .queryParam("locality", locality)
-                                                           .queryParam("country", country)
-                                                           .queryParam("filename", "filename")
-                                                           .queryParam("uploader", "ethereum:" + publicKey);
+                .queryParam("organisation", organisation)
+                .queryParam("locality", locality)
+                .queryParam("country", country)
+                .queryParam("filename", "filename")
+                .queryParam("uploader", "ethereum:" + publicKey);
 
         restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity, Void.class).getBody();
         return txHash;

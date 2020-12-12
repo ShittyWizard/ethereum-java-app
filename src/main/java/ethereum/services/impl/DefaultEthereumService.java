@@ -65,11 +65,17 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
     }
 
     @Override
-    public String changeFileOwner(String hashOfFile, String sendToAddress, String contractAddress, String privateKey)
-            throws Exception {
+    public TransactionReceipt storeHashOfFileWithTransactionInfo(String hashOfFile, String contractAddress, String privateKey) throws Exception {
         Credentials credentials = Credentials.create(privateKey);
         FileStorageContract fileStorageContract = FileStorageContract.load(contractAddress, web3, credentials, new DefaultGasProvider());
-        TransactionReceipt txChange = fileStorageContract.changeFileOwner(hashOfFile, sendToAddress).send();
+        TransactionReceipt txStore = fileStorageContract.initFileStore(hashOfFile).send();
+        return txStore;
+    }
+
+    @Override
+    public String changeFileOwner(String hashOfFile, String sendToAddress, String contractAddress, String privateKey)
+            throws Exception {
+        TransactionReceipt txChange = storeHashOfFileWithTransactionInfo(hashOfFile, contractAddress, privateKey);
         String txHash = txChange.getTransactionHash();
         System.out.println("Transaction hash " + txHash);
 
