@@ -41,39 +41,6 @@ public class CrosschainRequesterEthereumController {
     @Value("${eth.crossnode.private.key}")
     private String CROSS_NODE_PRIVATE_KEY;
 
-    @PostMapping("/changeOwner/init")
-    public String changeExistingFileOwner(
-            @RequestParam
-                    String ipfsHashFile,
-            @RequestParam
-                    String organisation,
-            @RequestParam
-                    String locality,
-            @RequestParam
-                    String country,
-            @RequestParam
-                    String publicKey,
-            @RequestParam
-                    String privateKey
-    ) throws Exception {
-        String txHash = ethereumService.changeFileOwner(ipfsHashFile, CROSS_NODE_PUBLIC_KEY, FILE_STORAGE_CONTRACT_ADDRESS, privateKey);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        InputStreamResource fileStreamResource = ipfsService.downloadFile(ipfsHashFile);
-        HttpEntity<InputStreamResource> entity = new HttpEntity<>(fileStreamResource, headers);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(CORDA_START_KYC_FLOW_URL)
-                .queryParam("organisation", organisation)
-                .queryParam("locality", locality)
-                .queryParam("country", country)
-                .queryParam("filename", "filename")
-                .queryParam("uploader", "ethereum:" + publicKey);
-
-        restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity, Void.class).getBody();
-        return txHash;
-    }
-
     @PostMapping("/changeOwnerExpress")
     public String changeInitFileOwner(
             @RequestBody
@@ -125,8 +92,6 @@ public class CrosschainRequesterEthereumController {
                     String privateKey
     )
             throws Exception {
-        String txHash = ethereumService.changeFileOwner(hashOfFile, CROSS_NODE_PUBLIC_KEY, FILE_STORAGE_CONTRACT_ADDRESS, privateKey);
-
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         InputStreamResource fileResource = ipfsService.downloadFile(hashOfFile);
@@ -140,6 +105,7 @@ public class CrosschainRequesterEthereumController {
                 .queryParam("uploader", "ethereum:" + publicKey);
 
         restTemplate.exchange(builder.toUriString(), HttpMethod.POST, entity, Void.class).getBody();
+        String txHash = ethereumService.changeFileOwner(hashOfFile, CROSS_NODE_PUBLIC_KEY, FILE_STORAGE_CONTRACT_ADDRESS, privateKey);
         return txHash;
     }
 }
