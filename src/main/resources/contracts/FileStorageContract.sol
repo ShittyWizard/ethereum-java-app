@@ -17,9 +17,9 @@ contract FileStorageContract {
     }
 
     function changeFileOwner(string memory hashOfFile, address sendToAddress) public {
-        if (!doesFileExist(hashOfFile)) {
-            initFileStore(hashOfFile);
-        }
+//        if (!doesFileExist(hashOfFile)) {
+//            initFileStore(hashOfFile);
+//        }
         if(doesFileBelongToSender(hashOfFile)) {
             uint256 index = getIndexOfExistingFile(hashOfFile);
             emit ChangeFileOwner(hashOfFile, msg.sender, sendToAddress);
