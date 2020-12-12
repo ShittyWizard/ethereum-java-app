@@ -33,7 +33,7 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
     private static final Logger LOG = LoggerFactory.getLogger(DefaultEthereumService.class);
 
 //    @Value("${eth.ganache.local.url}")
-    private String ganacheLocalHttpUrl = "http://localhost:8545";
+    private String ganacheLocalHttpUrl = "http://178.154.248.132:8545";
 
     private Web3j web3;
 

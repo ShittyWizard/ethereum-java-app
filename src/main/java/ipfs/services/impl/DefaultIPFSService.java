@@ -23,7 +23,7 @@ public class DefaultIPFSService implements IPFSService, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultIPFSService.class);
 
 //    @Value("${ipfs.node.multiaddr}")
-    private String multiaddr = "/ip4/127.0.0.1/tcp/5001";
+    private String multiaddr = "/ip4/178.154.248.132/tcp/5001";
 
     private IPFS ipfs;
 
