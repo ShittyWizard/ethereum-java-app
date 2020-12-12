@@ -44,6 +44,13 @@
                         <configuration>            
                             <mainClass>app.Application</mainClass>
                             <classifier>exec</classifier>
+                            <includeEmptyDirs>true</includeEmptyDirs>
+                            <resources>
+                                <resource>
+                                    <directory>${basedir}/src/main/java/app/resources</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
                         </configuration>
                     </execution>
                 </executions>
