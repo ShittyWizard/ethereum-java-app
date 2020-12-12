@@ -2,6 +2,7 @@ package app;
 
 import java.util.Collections;
 
+import app.config.CorsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +16,8 @@ import ipfs.config.IPFSConfig;
 
 @Import({
         EthereumConfig.class,
-        IPFSConfig.class
+        IPFSConfig.class,
+        CorsConfiguration.class
 })
 @PropertySource(
         "classpath:ethereum.properties"
