@@ -18,6 +18,9 @@ public interface EthereumService {
             throws Exception;
     public String storeHashOfFile(String hashOfFile, String contractAddress, String privateKey)
             throws Exception;
+
+    TransactionReceipt storeHashOfFileWithTransactionInfo(String hashOfFile, String contractAddress, String privateKey) throws Exception;
+
     public String changeFileOwner(String hashOfFile, String sendToAddress, String contractAddress, String privateKey)
             throws Exception;
     public List<String> getHashes(String contractAddress, String privateKey)

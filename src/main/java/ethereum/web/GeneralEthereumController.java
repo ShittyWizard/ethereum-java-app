@@ -3,6 +3,8 @@ package ethereum.web;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import ethereum.web.assemblers.EthereumTransactionInfoResourceAssembler;
+import ethereum.web.dto.EthereumTransactionInfoResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +21,7 @@ import ethereum.web.assemblers.InitFileStoreEventResourceAssembler;
 import ethereum.web.dto.ChangeFileOwnerEventResource;
 import ethereum.web.dto.InitFileStoreEventResource;
 import ipfs.services.IPFSService;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 @RestController
 @RequestMapping(value = "/ethereum/filestore", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -31,8 +34,25 @@ public class GeneralEthereumController {
     private InitFileStoreEventResourceAssembler initFileStoreEventResourceAssembler;
     @Autowired
     private ChangeFileOwnerEventResourceAssembler changeFileOwnerEventResourceAssembler;
+    @Autowired
+    private EthereumTransactionInfoResourceAssembler ethereumTransactionInfoResourceAssembler;
 
     protected static String FILE_STORAGE_CONTRACT_ADDRESS;
+
+    @PostMapping("/init/info")
+    public EthereumTransactionInfoResource storeFileInfo(
+            @RequestBody
+                    MultipartFile file,
+            @RequestParam
+                    String contractAddress,
+            @RequestParam
+                    String privateKey
+    )
+            throws Exception {
+        String hashOfFile = ipfsService.uploadMultipartFile(file);
+        TransactionReceipt transactionReceipt = ethereumService.storeHashOfFileWithTransactionInfo(hashOfFile, contractAddress, privateKey);
+        return ethereumTransactionInfoResourceAssembler.toResource(transactionReceipt, hashOfFile);
+    }
 
     @PostMapping("/init")
     public String storeFile(
