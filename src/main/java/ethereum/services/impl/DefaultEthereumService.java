@@ -87,9 +87,7 @@ public class DefaultEthereumService implements EthereumService, InitializingBean
             throws Exception {
         Credentials credentials = Credentials.create(privateKey);
         FileStorageContract fileStorageContract = FileStorageContract.load(contractAddress, web3, credentials, new DefaultGasProvider());
-        List<String> hashes = new ArrayList<>();
-        fileStorageContract.getFileStore().send().forEach(obj -> hashes.add(obj.toString()));
-        return hashes;
+        return (List<String>) fileStorageContract.getFileStore().send();
     }
 
     @Override
