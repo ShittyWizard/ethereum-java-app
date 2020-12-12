@@ -18,6 +18,7 @@ public class EthereumTransactionInfoResourceAssembler {
             resource.setBlockHash(transaction.getBlockHash());
             resource.setContractAddress(transaction.getContractAddress());
             resource.setTransactionIndex(transaction.getTransactionIndexRaw());
+            resource.setTransactionHash(transaction.getTransactionHash());
             resource.setFrom(transaction.getFrom());
             resource.setTo(transaction.getTo());
             resource.setStatus(transaction.getStatus());
