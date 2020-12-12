@@ -18,7 +18,7 @@
     <properties>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
-        <java-ipfs-http-client.version>v1.2.3</java-ipfs-http-client.version>
+        <java-ipfs-http-client.version>v1.3.3</java-ipfs-http-client.version>
         <web3j.version>4.3.0</web3j.version>
         <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
     </properties>
