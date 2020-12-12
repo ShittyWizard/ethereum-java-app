@@ -32,8 +32,8 @@ import static org.web3j.protocol.core.DefaultBlockParameterName.LATEST;
 public class DefaultEthereumService implements EthereumService, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultEthereumService.class);
 
-    @Value("${eth.ganache.local.url}")
-    private String ganacheLocalHttpUrl;
+//    @Value("${eth.ganache.local.url}")
+    private String ganacheLocalHttpUrl = "http://localhost:8545";
 
     private Web3j web3;
 
