@@ -1,5 +1,9 @@
 package ethereum.web;
 
+import java.io.IOException;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,8 +54,9 @@ public class GeneralEthereumController {
     )
             throws Exception {
         String hashOfFile = ipfsService.uploadMultipartFile(file);
+        String sha256Hash = getCheckSumForFile(file);
         TransactionReceipt transactionReceipt = ethereumService.storeHashOfFileWithTransactionInfo(hashOfFile, contractAddress, privateKey);
-        return ethereumTransactionInfoResourceAssembler.toResource(transactionReceipt, hashOfFile);
+        return ethereumTransactionInfoResourceAssembler.toResource(transactionReceipt, hashOfFile, sha256Hash);
     }
 
     @PostMapping("/init")
@@ -128,5 +133,18 @@ public class GeneralEthereumController {
         FILE_STORAGE_CONTRACT_ADDRESS = contractAddress;
         System.out.println("Contract address is " + contractAddress);
         return contractAddress;
+    }
+
+    private String getCheckSumForFile(MultipartFile file) throws NoSuchAlgorithmException, IOException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        try (DigestInputStream dis = new DigestInputStream(file.getInputStream(), md)) {
+            while (dis.read() != -1) ;
+            md = dis.getMessageDigest();
+        }
+        StringBuilder result = new StringBuilder();
+        for (byte b : md.digest()) {
+            result.append(String.format("%02x", b));
+        }
+        return result.toString();
     }
 }

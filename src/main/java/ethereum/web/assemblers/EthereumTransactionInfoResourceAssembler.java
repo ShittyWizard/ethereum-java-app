@@ -10,7 +10,7 @@ import java.util.List;
 
 @Component
 public class EthereumTransactionInfoResourceAssembler {
-    public EthereumTransactionInfoResource toResource(TransactionReceipt transaction, String ipfsFileHash) {
+    public EthereumTransactionInfoResource toResource(TransactionReceipt transaction, String ipfsFileHash, String sha256Hash) {
         EthereumTransactionInfoResource resource = new EthereumTransactionInfoResource();
         if (transaction != null) {
             resource.setIpfsFileHash(ipfsFileHash);
@@ -24,6 +24,7 @@ public class EthereumTransactionInfoResourceAssembler {
             resource.setStatus(transaction.getStatus());
             resource.setRoot(transaction.getRoot());
             resource.setLogs(getStringLogs(transaction.getLogs()));
+            resource.setSha256Hash(sha256Hash);
         }
         return resource;
     }

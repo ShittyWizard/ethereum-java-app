@@ -17,6 +17,7 @@ public class EthereumTransactionInfoResource {
     private String to;
     private List<String> logs;
     private String logsBloom;
+    private String sha256Hash;
 
     public String getIpfsFileHash() {
         return ipfsFileHash;
@@ -128,5 +129,13 @@ public class EthereumTransactionInfoResource {
 
     public void setLogsBloom(String logsBloom) {
         this.logsBloom = logsBloom;
+    }
+
+    public String getSha256Hash() {
+        return sha256Hash;
+    }
+
+    public void setSha256Hash(String sha256Hash) {
+        this.sha256Hash = sha256Hash;
     }
 }
