@@ -23,12 +23,8 @@ services:
     ports: 
     - "8545:8545"
 
-  eth-backend:
+  hack-eth-back:
     build: ethereum-java-app/
     ports:
     - "8081:8081"
-    - "5001:5001"
-    - "4001:4001"
-    - "8080:8080"
-    - "8545:8545"
 
