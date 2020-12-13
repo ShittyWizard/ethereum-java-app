@@ -33,8 +33,8 @@ public class CrosschainRequesterEthereumController {
     @Autowired
     private RestTemplate restTemplate;
 
-    //    todo: change address to new IP
     private static String CORDA_START_KYC_FLOW_URL = "http://84.201.169.143:10056/attachments/startKYCFlow/crosschain/receiver";
+//    private static String CORDA_START_KYC_FLOW_URL = "http://localhost:10056/attachments/startKYCFlow/crosschain/receiver";
 
     private String CROSS_NODE_PUBLIC_KEY="0x751fE2C79d17579479cAAe7c506b6Fe2c8F05026";
     private String CROSS_NODE_PRIVATE_KEY="0x5c690e5e749aaca8cdd21dfffd1cda77d1dca1326f0d9c756f5943947f8f5516";
@@ -96,6 +96,8 @@ public class CrosschainRequesterEthereumController {
         HttpEntity<InputStreamResource> entity = new HttpEntity<>(fileResource, headers);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(CORDA_START_KYC_FLOW_URL)
+                .queryParam("ipfsHashFile", hashOfFile)
+                .queryParam("senderPublicKey", publicKey)
                 .queryParam("organisation", organisation)
                 .queryParam("locality", locality)
                 .queryParam("country", country)

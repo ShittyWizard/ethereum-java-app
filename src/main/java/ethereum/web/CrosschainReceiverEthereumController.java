@@ -48,11 +48,15 @@ public class CrosschainReceiverEthereumController {
                         .map(changeFileOwnerEventResourceAssembler::toResource)
                         .collect(Collectors.toList());
         boolean isInitBySender = listOfAllInits.stream()
-                .anyMatch(res -> res.getHashOfFile().equals(ipfsHashOfFile) && res.getOwner().equals(senderPublicKey));
-        if (!isInitBySender) {
-            return listOfAllChangeOwners.stream().anyMatch(res -> res.getActualOwner().equals(senderPublicKey));
+                .anyMatch(res -> res.getHashOfFile().equalsIgnoreCase(ipfsHashOfFile) && res.getOwner().equalsIgnoreCase(senderPublicKey));
+        if (!listOfAllChangeOwners.isEmpty()) {
+            if (!isInitBySender) {
+                return listOfAllChangeOwners.stream().anyMatch(res -> res.getActualOwner().equalsIgnoreCase(senderPublicKey));
+            } else {
+                return listOfAllChangeOwners.stream().anyMatch(res -> !res.getPrevOwner().equalsIgnoreCase(senderPublicKey));
+            }
         } else {
-            return listOfAllChangeOwners.stream().anyMatch(res -> !res.getPrevOwner().equals(senderPublicKey));
+            return isInitBySender;
         }
     }
 
